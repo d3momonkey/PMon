@@ -301,7 +301,7 @@
 
 .memory-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--spacing-md);
 }
 
@@ -389,14 +389,17 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Detail Grid Layout */
+/* Detail Grid Layout (responsive) */
 .detail-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
-  height: auto;
-  min-height: 400px;
+}
+
+/* Allow motherboard overview to use same grid layout */
+.motherboard-overview .detail-grid {
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 }
 
 .chart-container {
@@ -406,8 +409,6 @@
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  height: fit-content;
-  min-height: 300px;
 }
 
 .chart-container h4 {
@@ -470,6 +471,7 @@
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
 /* Network and Storage specific styles */
@@ -553,6 +555,48 @@
   
   .overview-grid {
     grid-template-columns: 1fr;
+  }
+  
+  /* Motherboard responsive adjustments */
+  .motherboard-overview .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .memory-slots-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+  }
+  
+  .memory-slot {
+    padding: var(--spacing-sm);
+  }
+  
+  .health-indicators {
+    padding: var(--spacing-md);
+  }
+  
+  .expansion-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-slots-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .health-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .slot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
   }
 }
 

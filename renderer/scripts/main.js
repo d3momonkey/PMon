@@ -1128,8 +1128,15 @@ onThemeChanged() {
     // Update system info
     document.getElementById('system-manufacturer').textContent = mb.system.manufacturer;
     document.getElementById('system-model').textContent = mb.system.model;
-    document.getElementById('system-uuid').textContent = 
-      mb.system.uuid !== 'Not Available' ? mb.system.uuid.substring(0, 16) + '...' : 'Not Available';
+    
+    // Handle UUID with proper truncation
+    const uuidElement = document.getElementById('system-uuid');
+    if (mb.system.uuid !== 'Not Available' && mb.system.uuid.length > 20) {
+      uuidElement.textContent = mb.system.uuid.substring(0, 20) + '...';
+      uuidElement.title = mb.system.uuid; // Full UUID in tooltip
+    } else {
+      uuidElement.textContent = mb.system.uuid;
+    }
 
     // Update memory layout
     this.updateMemoryLayout(mb.memory);
@@ -1152,17 +1159,20 @@ onThemeChanged() {
       const isEmpty = slot.size === 0;
       const formattedSize = isEmpty ? 'Empty' : this.formatBytes(slot.size);
       
+      const deviceName = slot.deviceLocator || `Slot ${index + 1}`;
+      const truncatedName = deviceName.length > 15 ? deviceName.substring(0, 15) + '...' : deviceName;
+      
       slotsHtml += `
         <div class="memory-slot ${isEmpty ? 'empty' : 'occupied'}">
           <div class="slot-header">
-            <span class="slot-name">${slot.deviceLocator || `Slot ${index + 1}`}</span>
+            <span class="slot-name" title="${deviceName}">${truncatedName}</span>
             <span class="slot-size">${formattedSize.value || formattedSize} ${formattedSize.unit || ''}</span>
           </div>
           ${!isEmpty ? `
             <div class="slot-details">
               <div>Type: ${slot.type}</div>
               <div>Speed: ${slot.clockConfigured || 'Unknown'} MHz</div>
-              <div>Manufacturer: ${slot.manufacturer}</div>
+              <div>Mfg: ${slot.manufacturer.length > 12 ? slot.manufacturer.substring(0, 12) + '...' : slot.manufacturer}</div>
             </div>
           ` : ''}
         </div>
