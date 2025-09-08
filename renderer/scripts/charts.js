@@ -358,6 +358,16 @@ if (!isMainChart) {
     circle.style.strokeDashoffset = offset;
   }
 
+  updateStorageRing(percentage) {
+    const circle = document.querySelector('#storage-progress .progress-ring-circle');
+    if (!circle) return;
+
+    const circumference = 2 * Math.PI * 32; // 32 is the radius
+    const offset = circumference - (percentage / 100) * circumference;
+    
+    circle.style.strokeDashoffset = offset;
+  }
+
   updateStorageBars(readRate, writeRate, maxRate = null) {
     const readBar = document.getElementById('storage-read-bar');
     const writeBar = document.getElementById('storage-write-bar');

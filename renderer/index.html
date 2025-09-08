@@ -134,21 +134,11 @@
                                 <div class="metric-value" id="storage-usage">--%</div>
                             </div>
                             <div class="card-body">
-                                <div class="storage-bars">
-                                    <div class="storage-bar">
-                                        <div class="bar-label">Read</div>
-                                        <div class="bar-container">
-                                            <div class="bar-fill" id="storage-read-bar"></div>
-                                        </div>
-                                        <div class="bar-value" id="storage-read-value">0 B/s</div>
-                                    </div>
-                                    <div class="storage-bar">
-                                        <div class="bar-label">Write</div>
-                                        <div class="bar-container">
-                                            <div class="bar-fill" id="storage-write-bar"></div>
-                                        </div>
-                                        <div class="bar-value" id="storage-write-value">0 B/s</div>
-                                    </div>
+                                <div class="progress-ring" id="storage-progress">
+                                    <svg class="progress-ring-svg">
+                                        <circle class="progress-ring-circle-bg" cx="40" cy="40" r="32"></circle>
+                                        <circle class="progress-ring-circle" cx="40" cy="40" r="32"></circle>
+                                    </svg>
                                 </div>
                                 <div class="metric-details">
                                     <span id="storage-details">Loading...</span>
@@ -160,7 +150,7 @@
                         <div class="metric-card network-card">
                             <div class="card-header">
                                 <h3>Network</h3>
-                                <div class="metric-value" id="network-connections">--</div>
+                                <div class="metric-value" id="network-type">--</div>
                             </div>
                             <div class="card-body">
                                 <canvas id="network-mini-chart" class="mini-chart"></canvas>

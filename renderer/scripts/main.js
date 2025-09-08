@@ -235,14 +235,18 @@ initializeSectionCharts(sectionName) {
   }
 
   handleStatsUpdate(stats) {
-    this.lastStats = stats;
-    this.updateLastUpdatedTime();
-    
-    // Update overview cards
-    this.updateOverviewCards(stats);
-    
-    // Update detailed sections if active
-    this.updateDetailedSections(stats);
+    try {
+      this.lastStats = stats;
+      this.updateLastUpdatedTime();
+      
+      // Update overview cards
+      this.updateOverviewCards(stats);
+      
+      // Update detailed sections if active
+      this.updateDetailedSections(stats);
+    } catch (error) {
+      console.error('Error in handleStatsUpdate:', error);
+    }
   }
 
   updateOverviewCards(stats) {
@@ -287,34 +291,63 @@ initializeSectionCharts(sectionName) {
     }
 
     // Storage Card
-    if (stats.storage && stats.storage.io) {
+    if (stats.storage && stats.storage.filesystem && stats.storage.filesystem.length > 0) {
       const storageUsage = document.getElementById('storage-usage');
       const storageDetails = document.getElementById('storage-details');
       
-      // Calculate average filesystem usage
-      const avgUsage = stats.storage.filesystem.length > 0 ? 
-        stats.storage.filesystem.reduce((acc, fs) => acc + fs.usagePercent, 0) / stats.storage.filesystem.length : 0;
+      // Calculate total storage statistics
+      let totalSize = 0;
+      let totalUsed = 0;
+      let totalAvailable = 0;
       
-      if (storageUsage) storageUsage.textContent = `${avgUsage.toFixed(1)}%`;
+      stats.storage.filesystem.forEach(fs => {
+        totalSize += fs.size || 0;
+        totalUsed += fs.used || 0;
+        totalAvailable += fs.available || 0;
+      });
+      
+      const totalUsagePercent = totalSize > 0 ? (totalUsed / totalSize) * 100 : 0;
+      
+      if (storageUsage) storageUsage.textContent = `${totalUsagePercent.toFixed(1)}%`;
       if (storageDetails) {
-        const totalDisks = stats.storage.filesystem.length;
-        storageDetails.textContent = `${totalDisks} drive${totalDisks !== 1 ? 's' : ''}`;
+        const formattedUsed = this.chartManager.formatBytes(totalUsed);
+        const formattedTotal = this.chartManager.formatBytes(totalSize);
+        storageDetails.textContent = `${formattedUsed} / ${formattedTotal}`;
       }
       
-      // Update storage bars
-      const readRate = stats.storage.io.rates.read || 0;
-      const writeRate = stats.storage.io.rates.write || 0;
-      this.chartManager.updateStorageBars(readRate, writeRate);
+      // Update storage progress ring instead of bars
+      this.chartManager.updateStorageRing(totalUsagePercent);
     }
 
     // Network Card
     if (stats.network) {
-      const networkConnections = document.getElementById('network-connections');
+      const networkType = document.getElementById('network-type');
       const networkDetails = document.getElementById('network-details');
       
-      if (networkConnections) {
-        networkConnections.textContent = stats.network.connections.active.toString();
+      // Find primary/default interface and determine network type
+      if (networkType) {
+        let primaryInterfaceType = 'Unknown';
+        
+        // Look for the default interface first
+        const defaultInterface = stats.network.interfaces.find(iface => iface.isDefault);
+        if (defaultInterface && defaultInterface.interfaceType) {
+          primaryInterfaceType = defaultInterface.interfaceType.type;
+        } else {
+          // If no default, find the first active non-loopback interface
+          const activeInterface = stats.network.interfaces.find(iface => 
+            iface.operstate === 'up' && 
+            iface.interfaceType && 
+            iface.interfaceType.category !== 'loopback' &&
+            iface.interfaceType.category !== 'virtual'
+          );
+          if (activeInterface) {
+            primaryInterfaceType = activeInterface.interfaceType.type;
+          }
+        }
+        
+        networkType.textContent = primaryInterfaceType;
       }
+      
       if (networkDetails && stats.network.totals) {
         const rx = stats.network.totals.rates.formatted.rx;
         const tx = stats.network.totals.rates.formatted.tx;
@@ -558,16 +591,52 @@ updateDetailedContent(stats) {
         if (!storageContent.querySelector('.storage-overview')) {
           let html = '<div class="storage-overview">';
           
-          // Add I/O Chart section
+          // Calculate total storage statistics for overview
+          let totalSize = 0;
+          let totalUsed = 0;
+          let totalAvailable = 0;
+          
+          stats.storage.filesystem.forEach(fs => {
+            totalSize += fs.size || 0;
+            totalUsed += fs.used || 0;
+            totalAvailable += fs.available || 0;
+          });
+          
+          const totalUsagePercent = totalSize > 0 ? (totalUsed / totalSize) * 100 : 0;
+          const formattedTotalUsed = this.chartManager.formatBytes(totalUsed);
+          const formattedTotalSize = this.chartManager.formatBytes(totalSize);
+          const formattedTotalAvailable = this.chartManager.formatBytes(totalAvailable);
+          
+          // Add Storage Overview section
           html += `
             <div class="detail-grid">
               <div class="chart-container">
-                <h4>Storage I/O</h4>
+                <h4>Storage I/O Performance</h4>
                 <canvas id="storage-main-chart"></canvas>
               </div>
               <div class="info-panel">
                 <div class="info-group">
-                  <h4>I/O Statistics</h4>
+                  <h4>Total Storage Usage</h4>
+                  <div class="info-item">
+                    <span class="info-label">Total Capacity:</span>
+                    <span class="info-value">${formattedTotalSize}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Used Space:</span>
+                    <span class="info-value">${formattedTotalUsed}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Available Space:</span>
+                    <span class="info-value">${formattedTotalAvailable}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Usage Percentage:</span>
+                    <span class="info-value">${totalUsagePercent.toFixed(1)}%</span>
+                  </div>
+                </div>
+                
+                <div class="info-group">
+                  <h4>I/O Performance</h4>
                   <div class="info-item">
                     <span class="info-label">Read Rate:</span>
                     <span class="info-value" id="storage-read-rate">0 B/s</span>
@@ -581,23 +650,49 @@ updateDetailedContent(stats) {
             </div>
           `;
           
-          // Filesystem information
+          // Individual Drive Details
           if (stats.storage.filesystem.length > 0) {
-            html += '<div class="info-group"><h4>Filesystems</h4>';
-            stats.storage.filesystem.forEach(fs => {
+            html += '<div class="info-group drive-details"><h4>Individual Drives</h4>';
+            stats.storage.filesystem.forEach((fs, index) => {
+              // Determine drive type indicator
+              const driveType = this.getDriveTypeInfo(fs.fs, fs.type);
+              const driveClass = driveType.name.toLowerCase().replace(' ', '-');
+              const driveId = `drive-${fs.fs.replace(':', '').replace('/', '-')}`;
+              
               html += `
-                <div class="storage-item">
+                <div class="storage-item drive-item ${driveClass}" id="${driveId}">
                   <div class="storage-header">
-                    <span class="fs-name">${fs.fs}</span>
-                    <span class="fs-usage">${fs.usagePercent.toFixed(1)}%</span>
+                    <div class="drive-info">
+                      <span class="drive-icon" title="${driveType.description}">${driveType.icon}</span>
+                      <div class="drive-names">
+                        <span class="fs-name">${fs.fs}</span>
+                        <span class="drive-type">${driveType.name}</span>
+                      </div>
+                    </div>
+                    <span class="fs-usage" id="${driveId}-usage">${fs.usagePercent.toFixed(1)}%</span>
                   </div>
                   <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${Math.min(fs.usagePercent, 100)}%"></div>
+                    <div class="progress-fill" id="${driveId}-progress" style="width: ${Math.min(fs.usagePercent, 100)}%"></div>
                   </div>
                   <div class="fs-details">
-                    ${fs.formatted.used.value} ${fs.formatted.used.unit} / 
-                    ${fs.formatted.size.value} ${fs.formatted.size.unit} 
-                    (${fs.formatted.available.value} ${fs.formatted.available.unit} free)
+                    <div class="fs-detail-grid">
+                      <div class="detail-item">
+                        <span class="detail-label">Used:</span>
+                        <span class="detail-value" id="${driveId}-used">${fs.formatted.used.value} ${fs.formatted.used.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Available:</span>
+                        <span class="detail-value" id="${driveId}-available">${fs.formatted.available.value} ${fs.formatted.available.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value" id="${driveId}-total">${fs.formatted.size.value} ${fs.formatted.size.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">File System:</span>
+                        <span class="detail-value" id="${driveId}-type">${fs.type || 'Unknown'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               `;
@@ -613,6 +708,36 @@ updateDetailedContent(stats) {
             this.createStorageChart();
           }, 100);
         }
+        
+        // Update total storage usage in the overview panel
+        if (stats.storage.filesystem.length > 0) {
+          let totalSize = 0;
+          let totalUsed = 0;
+          let totalAvailable = 0;
+          
+          stats.storage.filesystem.forEach(fs => {
+            totalSize += fs.size || 0;
+            totalUsed += fs.used || 0;
+            totalAvailable += fs.available || 0;
+          });
+          
+          const totalUsagePercent = totalSize > 0 ? (totalUsed / totalSize) * 100 : 0;
+          const formattedTotalUsed = this.chartManager.formatBytes(totalUsed);
+          const formattedTotalSize = this.chartManager.formatBytes(totalSize);
+          const formattedTotalAvailable = this.chartManager.formatBytes(totalAvailable);
+          
+          // Update total storage overview elements if they exist
+          const totalCapacityEl = document.querySelector('.storage-overview .info-group:first-child .info-item:nth-child(1) .info-value');
+          const usedSpaceEl = document.querySelector('.storage-overview .info-group:first-child .info-item:nth-child(2) .info-value');
+          const availableSpaceEl = document.querySelector('.storage-overview .info-group:first-child .info-item:nth-child(3) .info-value');
+          const usagePercentEl = document.querySelector('.storage-overview .info-group:first-child .info-item:nth-child(4) .info-value');
+          
+          if (totalCapacityEl) totalCapacityEl.textContent = formattedTotalSize;
+          if (usedSpaceEl) usedSpaceEl.textContent = formattedTotalUsed;
+          if (availableSpaceEl) availableSpaceEl.textContent = formattedTotalAvailable;
+          if (usagePercentEl) usagePercentEl.textContent = `${totalUsagePercent.toFixed(1)}%`;
+        }
+        
         
         // Update I/O rates
         if (stats.storage.io && stats.storage.io.rates) {
@@ -651,6 +776,22 @@ updateDetailedContent(stats) {
               </div>
               <div class="info-panel">
                 <div class="info-group">
+                  <h4>Connection Information</h4>
+                  <div class="info-item">
+                    <span class="info-label">Connection Type:</span>
+                    <span class="info-value" id="network-connection-type">Unknown</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Primary Interface:</span>
+                    <span class="info-value" id="network-primary-interface">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Connection Status:</span>
+                    <span class="info-value" id="network-connection-status">Unknown</span>
+                  </div>
+                </div>
+                
+                <div class="info-group">
                   <h4>Traffic Statistics</h4>
                   <div class="info-item">
                     <span class="info-label">Download:</span>
@@ -665,6 +806,26 @@ updateDetailedContent(stats) {
                     <span class="info-value" id="network-active-connections">0</span>
                   </div>
                 </div>
+                
+                <div class="info-group">
+                  <h4>Network Addressing</h4>
+                  <div class="info-item">
+                    <span class="info-label">Local IP:</span>
+                    <span class="info-value" id="network-local-ip">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Gateway:</span>
+                    <span class="info-value" id="network-gateway">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">DNS Servers:</span>
+                    <span class="info-value" id="network-dns">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Subnet Mask:</span>
+                    <span class="info-value" id="network-subnet">N/A</span>
+                  </div>
+                </div>
               </div>
             </div>
           `;
@@ -673,21 +834,58 @@ updateDetailedContent(stats) {
           if (stats.network.interfaces.length > 0) {
             html += '<div class="info-group"><h4>Network Interfaces</h4>';
             stats.network.interfaces.forEach(iface => {
-              if (iface.info && !iface.info.internal) {
+              // Show interface if it has no info (null) or if it has info and is not internal
+              if (!iface.info || (iface.info && !iface.info.internal)) {
+                const typeIcon = iface.interfaceType?.icon || '❓';
+                const typeDescription = iface.interfaceType?.description || 'Unknown interface';
+                const manufacturer = iface.manufacturer || 'Unknown';
+                const isDefault = iface.isDefault ? ' (Default)' : '';
+                
                 html += `
-                  <div class="network-item">
+                  <div class="network-item ${iface.interfaceType?.category || 'unknown'}">
                     <div class="network-header">
-                      <span class="iface-name">${iface.iface}</span>
+                      <div class="interface-info">
+                        <span class="interface-icon" title="${typeDescription}">${typeIcon}</span>
+                        <div class="interface-names">
+                          <span class="iface-name">${iface.iface}${isDefault}</span>
+                          <span class="interface-type">${iface.interfaceType?.type || 'Unknown'}</span>
+                        </div>
+                      </div>
                       <span class="iface-status ${iface.operstate === 'up' ? 'active' : 'inactive'}">${iface.operstate}</span>
                     </div>
                     <div class="network-details">
-                      IP: ${iface.info.ip4 || 'N/A'} | 
-                      MAC: ${iface.info.mac || 'N/A'} | 
-                      Speed: ${iface.info.speed ? iface.info.speed + ' Mbps' : 'N/A'}
+                      <div class="detail-row">
+                        <span class="detail-label">IP Address:</span>
+                        <span class="detail-value">${iface.info?.ip4 || 'N/A'}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-label">MAC Address:</span>
+                        <span class="detail-value">${iface.info?.mac || 'N/A'}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-label">Manufacturer:</span>
+                        <span class="detail-value manufacturer">${manufacturer}</span>
+                      </div>
+                      <div class="detail-row">
+                        <span class="detail-label">Link Speed:</span>
+                        <span class="detail-value">${iface.info?.speed ? iface.info.speed + ' Mbps' : 'N/A'}</span>
+                      </div>
+                      ${iface.info?.mtu ? `
+                        <div class="detail-row">
+                          <span class="detail-label">MTU:</span>
+                          <span class="detail-value">${iface.info.mtu}</span>
+                        </div>
+                      ` : ''}
                     </div>
                     <div class="network-stats" id="iface-${iface.iface}-stats">
-                      ↓ ${iface.rates?.formatted?.rx?.value || '0'} ${iface.rates?.formatted?.rx?.unit || 'B/s'} | 
-                      ↑ ${iface.rates?.formatted?.tx?.value || '0'} ${iface.rates?.formatted?.tx?.unit || 'B/s'}
+                      <div class="stat-item">
+                        <span class="stat-icon">↓</span>
+                        <span class="stat-value">${iface.rates?.formatted?.rx?.value || '0'} ${iface.rates?.formatted?.rx?.unit || 'B/s'}</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-icon">↑</span>
+                        <span class="stat-value">${iface.rates?.formatted?.tx?.value || '0'} ${iface.rates?.formatted?.tx?.unit || 'B/s'}</span>
+                      </div>
                     </div>
                   </div>
                 `;
@@ -718,14 +916,32 @@ updateDetailedContent(stats) {
           this.chartManager.updateChart('network-main-chart', [rxRate / 1024, txRate / 1024]);
         }
         
+        // Update connection information
+        this.updateConnectionInfo(stats.network);
+        
+        // Update network addressing information
+        if (stats.network.addressing) {
+          const addressing = stats.network.addressing;
+          document.getElementById('network-local-ip').textContent = addressing.localIP || 'N/A';
+          document.getElementById('network-gateway').textContent = addressing.gateway || 'N/A';
+          document.getElementById('network-dns').textContent = addressing.dns || 'N/A';
+          document.getElementById('network-subnet').textContent = addressing.subnet || 'N/A';
+        }
+        
         // Update individual interface stats
         stats.network.interfaces.forEach(iface => {
-          if (iface.info && !iface.info.internal && iface.rates) {
+          if ((!iface.info || (iface.info && !iface.info.internal)) && iface.rates) {
             const statsElement = document.getElementById(`iface-${iface.iface}-stats`);
             if (statsElement) {
               statsElement.innerHTML = `
-                ↓ ${iface.rates.formatted?.rx?.value || '0'} ${iface.rates.formatted?.rx?.unit || 'B/s'} | 
-                ↑ ${iface.rates.formatted?.tx?.value || '0'} ${iface.rates.formatted?.tx?.unit || 'B/s'}
+                <div class="stat-item">
+                  <span class="stat-icon">↓</span>
+                  <span class="stat-value">${iface.rates.formatted?.rx?.value || '0'} ${iface.rates.formatted?.rx?.unit || 'B/s'}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">↑</span>
+                  <span class="stat-value">${iface.rates.formatted?.tx?.value || '0'} ${iface.rates.formatted?.tx?.unit || 'B/s'}</span>
+                </div>
               `;
             }
           }
@@ -872,25 +1088,52 @@ onThemeChanged() {
 
   ensureStorageContent() {
     const storageContent = document.getElementById('storage-content');
-    if (storageContent && !storageContent.querySelector('.detail-grid')) {
+    if (storageContent && !storageContent.querySelector('.storage-overview')) {
       storageContent.innerHTML = `
-        <div class="detail-grid">
-          <div class="chart-container">
-            <h4>Storage I/O</h4>
-            <canvas id="storage-main-chart"></canvas>
-          </div>
-          <div class="info-panel">
-            <div class="info-group">
-              <h4>I/O Statistics</h4>
-              <div class="info-item">
-                <span class="info-label">Read Rate:</span>
-                <span class="info-value" id="storage-read-rate">0 B/s</span>
+        <div class="storage-overview">
+          <div class="detail-grid">
+            <div class="chart-container">
+              <h4>Storage I/O Performance</h4>
+              <canvas id="storage-main-chart"></canvas>
+            </div>
+            <div class="info-panel">
+              <div class="info-group">
+                <h4>Total Storage Usage</h4>
+                <div class="info-item">
+                  <span class="info-label">Total Capacity:</span>
+                  <span class="info-value">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Used Space:</span>
+                  <span class="info-value">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Available Space:</span>
+                  <span class="info-value">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Usage Percentage:</span>
+                  <span class="info-value">Loading...</span>
+                </div>
               </div>
-              <div class="info-item">
-                <span class="info-label">Write Rate:</span>
-                <span class="info-value" id="storage-write-rate">0 B/s</span>
+              
+              <div class="info-group">
+                <h4>I/O Performance</h4>
+                <div class="info-item">
+                  <span class="info-label">Read Rate:</span>
+                  <span class="info-value" id="storage-read-rate">0 B/s</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Write Rate:</span>
+                  <span class="info-value" id="storage-write-rate">0 B/s</span>
+                </div>
               </div>
             </div>
+          </div>
+          
+          <div class="info-group drive-details">
+            <h4>Individual Drives</h4>
+            <p>Drive information will appear when navigating to the Storage section.</p>
           </div>
         </div>
       `;
@@ -914,6 +1157,22 @@ onThemeChanged() {
             </div>
             <div class="info-panel">
               <div class="info-group">
+                <h4>Connection Information</h4>
+                <div class="info-item">
+                  <span class="info-label">Connection Type:</span>
+                  <span class="info-value" id="network-connection-type">Unknown</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Primary Interface:</span>
+                  <span class="info-value" id="network-primary-interface">N/A</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Connection Status:</span>
+                  <span class="info-value" id="network-connection-status">Unknown</span>
+                </div>
+              </div>
+              
+              <div class="info-group">
                 <h4>Traffic Statistics</h4>
                 <div class="info-item">
                   <span class="info-label">Download:</span>
@@ -926,6 +1185,26 @@ onThemeChanged() {
                 <div class="info-item">
                   <span class="info-label">Active Connections:</span>
                   <span class="info-value" id="network-active-connections">0</span>
+                </div>
+              </div>
+              
+              <div class="info-group">
+                <h4>Network Addressing</h4>
+                <div class="info-item">
+                  <span class="info-label">Local IP:</span>
+                  <span class="info-value" id="network-local-ip">N/A</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Gateway:</span>
+                  <span class="info-value" id="network-gateway">N/A</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">DNS Servers:</span>
+                  <span class="info-value" id="network-dns">N/A</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Subnet Mask:</span>
+                  <span class="info-value" id="network-subnet">N/A</span>
                 </div>
               </div>
             </div>
@@ -1128,8 +1407,15 @@ onThemeChanged() {
     // Update system info
     document.getElementById('system-manufacturer').textContent = mb.system.manufacturer;
     document.getElementById('system-model').textContent = mb.system.model;
-    document.getElementById('system-uuid').textContent = 
-      mb.system.uuid !== 'Not Available' ? mb.system.uuid.substring(0, 16) + '...' : 'Not Available';
+    
+    // Handle UUID with proper truncation
+    const uuidElement = document.getElementById('system-uuid');
+    if (mb.system.uuid !== 'Not Available' && mb.system.uuid.length > 20) {
+      uuidElement.textContent = mb.system.uuid.substring(0, 20) + '...';
+      uuidElement.title = mb.system.uuid; // Full UUID in tooltip
+    } else {
+      uuidElement.textContent = mb.system.uuid;
+    }
 
     // Update memory layout
     this.updateMemoryLayout(mb.memory);
@@ -1152,17 +1438,20 @@ onThemeChanged() {
       const isEmpty = slot.size === 0;
       const formattedSize = isEmpty ? 'Empty' : this.formatBytes(slot.size);
       
+      const deviceName = slot.deviceLocator || `Slot ${index + 1}`;
+      const truncatedName = deviceName.length > 15 ? deviceName.substring(0, 15) + '...' : deviceName;
+      
       slotsHtml += `
         <div class="memory-slot ${isEmpty ? 'empty' : 'occupied'}">
           <div class="slot-header">
-            <span class="slot-name">${slot.deviceLocator || `Slot ${index + 1}`}</span>
+            <span class="slot-name" title="${deviceName}">${truncatedName}</span>
             <span class="slot-size">${formattedSize.value || formattedSize} ${formattedSize.unit || ''}</span>
           </div>
           ${!isEmpty ? `
             <div class="slot-details">
               <div>Type: ${slot.type}</div>
               <div>Speed: ${slot.clockConfigured || 'Unknown'} MHz</div>
-              <div>Manufacturer: ${slot.manufacturer}</div>
+              <div>Mfg: ${slot.manufacturer.length > 12 ? slot.manufacturer.substring(0, 12) + '...' : slot.manufacturer}</div>
             </div>
           ` : ''}
         </div>
@@ -1254,6 +1543,156 @@ onThemeChanged() {
       unit: sizes[i]
     };
   }
+
+  getDriveTypeInfo(driveLetter, fileSystem) {
+    // Determine drive type based on drive letter and filesystem
+    const drive = driveLetter.toUpperCase();
+    
+    // System/Boot drives
+    if (drive === 'C:' || drive === '/') {
+      return {
+        icon: '💿',
+        name: 'System Drive',
+        description: 'Primary system/boot drive'
+      };
+    }
+    
+    // Network drives
+    if (drive.startsWith('\\\\') || fileSystem === 'cifs' || fileSystem === 'nfs') {
+      return {
+        icon: '🌐',
+        name: 'Network Drive',
+        description: 'Network attached storage'
+      };
+    }
+    
+    // Optical/CD drives
+    if (fileSystem === 'iso9660' || fileSystem === 'udf') {
+      return {
+        icon: '📍',
+        name: 'Optical Drive',
+        description: 'CD/DVD/Blu-ray drive'
+      };
+    }
+    
+    // USB/External drives (common drive letters)
+    if (['D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:'].includes(drive) && fileSystem !== 'NTFS') {
+      return {
+        icon: '💾',
+        name: 'Removable Drive',
+        description: 'USB or external drive'
+      };
+    }
+    
+    // SSD indicators (modern file systems)
+    if (fileSystem === 'ext4' || fileSystem === 'btrfs' || fileSystem === 'zfs') {
+      return {
+        icon: '⚡',
+        name: 'Storage Drive',
+        description: 'High-performance storage'
+      };
+    }
+    
+    // Default hard drive
+    return {
+      icon: '💾',
+      name: 'Storage Drive',
+      description: 'Local storage drive'
+    };
+  }
+
+  updateConnectionInfo(networkStats) {
+    // Only update if we're in the network section to avoid unnecessary DOM operations
+    if (this.currentSection !== 'network') return;
+    if (!networkStats || !networkStats.interfaces || networkStats.interfaces.length === 0) return;
+    
+    try {
+      // Find the primary interface (default or first active)
+      const defaultInterface = networkStats.interfaces.find(iface => iface.isDefault);
+      const activeInterface = networkStats.interfaces.find(iface => 
+        iface.operstate === 'up' && 
+        iface.interfaceType && 
+        iface.interfaceType.category !== 'loopback' &&
+        iface.interfaceType.category !== 'virtual'
+      );
+      
+      const primaryInterface = defaultInterface || activeInterface || networkStats.interfaces[0];
+      
+      if (primaryInterface) {
+        // Update Connection Type
+        const connectionTypeElement = document.getElementById('network-connection-type');
+        if (connectionTypeElement) {
+          const connectionType = this.getConnectionDisplayName(primaryInterface.interfaceType);
+          if (connectionTypeElement.textContent !== connectionType) {
+            connectionTypeElement.textContent = connectionType;
+            connectionTypeElement.className = 'info-value connection-type ' + (primaryInterface.interfaceType?.category || 'unknown');
+          }
+        }
+        
+        // Update Primary Interface
+        const primaryInterfaceElement = document.getElementById('network-primary-interface');
+        if (primaryInterfaceElement) {
+          const interfaceName = primaryInterface.iface + (primaryInterface.isDefault ? ' (Default)' : '');
+          if (primaryInterfaceElement.textContent !== interfaceName) {
+            primaryInterfaceElement.textContent = interfaceName;
+          }
+        }
+        
+        // Update Connection Status
+        const connectionStatusElement = document.getElementById('network-connection-status');
+        if (connectionStatusElement) {
+          const status = this.getConnectionStatus(primaryInterface);
+          if (connectionStatusElement.textContent !== status.text) {
+            connectionStatusElement.textContent = status.text;
+            connectionStatusElement.className = 'info-value connection-status ' + status.class;
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Error updating connection info:', error);
+    }
+  }
+  
+  getConnectionDisplayName(interfaceType) {
+    if (!interfaceType) return 'Unknown';
+    
+    switch (interfaceType.category) {
+      case 'ethernet':
+        return '🌐 Ethernet Connection';
+      case 'wifi':
+        return '📶 Wireless Connection';
+      case 'bluetooth':
+        return '🔵 Bluetooth Connection';
+      case 'cellular':
+        return '📱 Mobile Connection';
+      case 'vpn':
+        return '🛡️ VPN Connection';
+      case 'virtual':
+        return '🔗 Virtual Connection';
+      case 'loopback':
+        return '🔄 Loopback Connection';
+      default:
+        return interfaceType.type + ' Connection';
+    }
+  }
+  
+  getConnectionStatus(networkInterface) {
+    const operstate = networkInterface.operstate?.toLowerCase();
+    
+    switch (operstate) {
+      case 'up':
+        return { text: 'Connected', class: 'connected' };
+      case 'down':
+        return { text: 'Disconnected', class: 'disconnected' };
+      case 'dormant':
+        return { text: 'Standby', class: 'standby' };
+      case 'unknown':
+      default:
+        return { text: 'Status Unknown', class: 'unknown' };
+    }
+  }
+
+  
 
   showLoadingContent(sectionName) {
     const sectionContent = document.querySelector(`#${sectionName}-content`);

@@ -276,12 +276,11 @@ body {
   box-sizing: border-box;
 }
 
-/* Detail Grid */
+/* Detail Grid (override to responsive) */
 .detail-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--spacing-lg);
-  height: calc(100vh - 200px);
 }
 
 .chart-container {
@@ -352,6 +351,16 @@ body {
 @media (max-width: 768px) {
   .app-sidebar {
     width: 60px;
+  }
+  
+  /* Stack detail grid on small screens */
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .chart-container canvas {
+    min-height: 160px;
   }
   
   .nav-label {

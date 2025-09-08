@@ -31,8 +31,8 @@ class StorageMonitor {
       }
 
 // Get current filesystem info and disk I/O
-      const [fsStats, blockDevices, disksIO] = await Promise.all([
-        si.fsStats().catch(() => []),
+      const [fsSize, blockDevices, disksIO] = await Promise.all([
+        si.fsSize().catch(() => []),
         si.blockDevices().catch(() => []),
 si.disksIO().catch(() => ({ rIO: 0, wIO: 0, tIO: 0, rIO_sec: 0, wIO_sec: 0, tIO_sec: 0, rTime: 0, wTime: 0 }))
       ]);
@@ -64,7 +64,7 @@ si.disksIO().catch(() => ({ rIO: 0, wIO: 0, tIO: 0, rIO_sec: 0, wIO_sec: 0, tIO_
       }
 
       const stats = {
-        filesystem: (fsStats || []).map(fs => ({
+        filesystem: (fsSize || []).map(fs => ({
           fs: fs.fs,
           type: fs.type,
           size: fs.size,

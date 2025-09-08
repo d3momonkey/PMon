@@ -301,7 +301,7 @@
 
 .memory-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--spacing-md);
 }
 
@@ -389,14 +389,17 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Detail Grid Layout */
+/* Detail Grid Layout (responsive) */
 .detail-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
-  height: auto;
-  min-height: 400px;
+}
+
+/* Allow motherboard overview to use same grid layout */
+.motherboard-overview .detail-grid {
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 }
 
 .chart-container {
@@ -406,8 +409,6 @@
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  height: fit-content;
-  min-height: 300px;
 }
 
 .chart-container h4 {
@@ -470,6 +471,7 @@
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
 /* Network and Storage specific styles */
@@ -483,6 +485,46 @@
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.network-item:hover {
+  background-color: var(--bg-card);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+/* Network interface type indicators */
+.network-item.ethernet {
+  border-left: 4px solid #2196f3;
+}
+
+.network-item.wifi {
+  border-left: 4px solid #9c27b0;
+}
+
+.network-item.virtual {
+  border-left: 4px solid #ff9800;
+}
+
+.network-item.loopback {
+  border-left: 4px solid #607d8b;
+}
+
+.network-item.vpn {
+  border-left: 4px solid #4caf50;
+}
+
+.network-item.bluetooth {
+  border-left: 4px solid #2196f3;
+}
+
+.network-item.cellular {
+  border-left: 4px solid #f44336;
+}
+
+.network-item.unknown {
+  border-left: 4px solid var(--text-muted);
 }
 
 .network-header, .storage-header {
@@ -493,17 +535,48 @@
   font-weight: 500;
 }
 
+/* Enhanced network interface header */
+.interface-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.interface-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.interface-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .iface-name, .fs-name {
   color: var(--text-primary);
   font-size: 1rem;
+  font-weight: 600;
+}
+
+.interface-type {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 400;
 }
 
 .iface-status.active {
   color: var(--success-color);
+  font-weight: 600;
 }
 
 .iface-status.inactive {
   color: var(--text-muted);
+  font-weight: 500;
 }
 
 .fs-usage {
@@ -511,7 +584,76 @@
   font-family: 'Courier New', monospace;
 }
 
-.network-details, .network-stats, .fs-details {
+/* Enhanced network details layout */
+.network-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-xs);
+  margin: var(--spacing-sm) 0;
+  padding: var(--spacing-sm);
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color-light);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+.detail-value.manufacturer {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+/* Enhanced network stats */
+.network-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color-light);
+  margin-top: var(--spacing-sm);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.stat-icon {
+  font-size: 1rem;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.stat-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.fs-details {
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-top: var(--spacing-xs);
@@ -553,6 +695,48 @@
   
   .overview-grid {
     grid-template-columns: 1fr;
+  }
+  
+  /* Motherboard responsive adjustments */
+  .motherboard-overview .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .memory-slots-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+  }
+  
+  .memory-slot {
+    padding: var(--spacing-sm);
+  }
+  
+  .health-indicators {
+    padding: var(--spacing-md);
+  }
+  
+  .expansion-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-slots-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .health-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .slot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
   }
 }
 
@@ -669,5 +853,179 @@
   
   .metric-details {
     font-size: 0.75rem;
+  }
+}
+
+/* Enhanced Storage Drive Styling */
+.drive-item {
+  margin-bottom: var(--spacing-md);
+  transition: all 0.2s ease;
+}
+
+.drive-item:hover {
+  background-color: var(--bg-card);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.drive-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.drive-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.drive-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drive-type {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.fs-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.detail-item .detail-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.detail-item .detail-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Drive type specific colors - simplified for better performance */
+.drive-item.system-drive {
+  border-left: 4px solid #2196f3;
+}
+
+.drive-item.network-drive {
+  border-left: 4px solid #4caf50;
+}
+
+.drive-item.removable-drive {
+  border-left: 4px solid #ff9800;
+}
+
+.drive-item.optical-drive {
+  border-left: 4px solid #9c27b0;
+}
+
+/* Storage overview enhancements */
+.storage-overview .info-panel {
+  max-height: none;
+}
+
+.drive-details {
+  margin-top: var(--spacing-lg);
+}
+
+.drive-details h4 {
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Connection Information Styling */
+.connection-type {
+  font-weight: 600;
+}
+
+.connection-type.ethernet {
+  color: #2196f3;
+}
+
+.connection-type.wifi {
+  color: #9c27b0;
+}
+
+.connection-type.bluetooth {
+  color: #2196f3;
+}
+
+.connection-type.cellular {
+  color: #f44336;
+}
+
+.connection-type.vpn {
+  color: #4caf50;
+}
+
+.connection-type.virtual {
+  color: #ff9800;
+}
+
+.connection-status {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.connection-status.connected {
+  color: var(--success-color);
+}
+
+.connection-status.disconnected {
+  color: var(--error-color);
+}
+
+.connection-status.standby {
+  color: var(--warning-color);
+}
+
+.connection-status.unknown {
+  color: var(--text-muted);
+}
+
+/* Enhanced network info panel */
+.network-overview .info-panel .info-group:first-child {
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Responsive storage styling */
+@media (max-width: 768px) {
+  .fs-detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .drive-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .drive-names {
+    align-items: flex-start;
   }
 }
