@@ -204,6 +204,10 @@ initializeSectionCharts(sectionName) {
       case 'npu':
         // NPU content will be updated when data arrives
         break;
+      case 'motherboard':
+        // Ensure motherboard content is initialized
+        this.ensureMotherboardContent();
+        break;
     }
   }
 
@@ -343,6 +347,48 @@ initializeSectionCharts(sectionName) {
         }
         if (npuDetails) npuDetails.textContent = 'No NPU detected';
       }
+    }
+
+    // Motherboard Card
+    if (stats.motherboard && !stats.motherboard.error) {
+      const motherboardHealth = document.getElementById('motherboard-health');
+      const motherboardBrand = document.getElementById('motherboard-brand');
+      const motherboardModel = document.getElementById('motherboard-model');
+      const biosVersion = document.getElementById('bios-version');
+      const memorySlots = document.getElementById('memory-slots');
+      
+      if (motherboardHealth) {
+        // Simple health indicator based on detection success
+        const healthScore = stats.motherboard.motherboard.manufacturer !== 'Unknown' ? 'Good' : 'Unknown';
+        motherboardHealth.textContent = healthScore;
+      }
+      
+      if (motherboardBrand) {
+        motherboardBrand.textContent = stats.motherboard.motherboard.manufacturer || 'Unknown';
+      }
+      
+      if (motherboardModel) {
+        motherboardModel.textContent = stats.motherboard.motherboard.model || 'Unknown Model';
+      }
+      
+      if (biosVersion) {
+        biosVersion.textContent = stats.motherboard.bios.version || 'Unknown';
+      }
+      
+      if (memorySlots) {
+        const occupied = stats.motherboard.memory.occupiedSlots || 0;
+        const total = stats.motherboard.memory.totalSlots || 0;
+        memorySlots.textContent = `${occupied}/${total}`;
+      }
+    } else if (stats.motherboard && stats.motherboard.error) {
+      // Handle error state
+      const motherboardHealth = document.getElementById('motherboard-health');
+      const motherboardBrand = document.getElementById('motherboard-brand');
+      const motherboardModel = document.getElementById('motherboard-model');
+      
+      if (motherboardHealth) motherboardHealth.textContent = 'Error';
+      if (motherboardBrand) motherboardBrand.textContent = 'Detection Error';
+      if (motherboardModel) motherboardModel.textContent = 'Unable to detect motherboard';
     }
   }
 
@@ -582,7 +628,12 @@ updateDetailedContent(stats) {
       }
     }
 
-// Network Section
+// Motherboard Section
+    if (this.currentSection === 'motherboard') {
+      this.updateMotherboardDetailedContent(stats);
+    }
+
+    // Network Section
     if (this.currentSection === 'network') {
       const networkContent = document.getElementById('network-content');
       if (networkContent && stats.network) {
@@ -903,6 +954,9 @@ onThemeChanged() {
       case 'npu':
         this.ensureNPUContent();
         break;
+      case 'motherboard':
+        this.ensureMotherboardContent();
+        break;
     }
   }
 
@@ -929,6 +983,276 @@ onThemeChanged() {
         </div>
       `;
     }
+  }
+
+  ensureMotherboardContent() {
+    const motherboardContent = document.getElementById('motherboard-content');
+    if (motherboardContent && !motherboardContent.querySelector('.motherboard-overview')) {
+      motherboardContent.innerHTML = `
+        <div class="motherboard-overview">
+          <div class="detail-grid">
+            <div class="chart-container">
+              <h4>System Health Overview</h4>
+              <div class="health-indicators">
+                <div class="health-item">
+                  <span class="health-label">Overall Health:</span>
+                  <span class="health-value" id="motherboard-health-score">Checking...</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">BIOS Age:</span>
+                  <span class="health-value" id="bios-age">--</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">Memory Utilization:</span>
+                  <span class="health-value" id="memory-utilization">--%</span>
+                </div>
+              </div>
+            </div>
+            <div class="info-panel">
+              <div class="info-group">
+                <h4>Motherboard Information</h4>
+                <div class="info-item">
+                  <span class="info-label">Manufacturer:</span>
+                  <span class="info-value" id="mb-manufacturer">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Model:</span>
+                  <span class="info-value" id="mb-model">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Version:</span>
+                  <span class="info-value" id="mb-version">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Serial Number:</span>
+                  <span class="info-value" id="mb-serial">Loading...</span>
+                </div>
+              </div>
+              
+              <div class="info-group">
+                <h4>BIOS/UEFI Information</h4>
+                <div class="info-item">
+                  <span class="info-label">Vendor:</span>
+                  <span class="info-value" id="bios-vendor">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Version:</span>
+                  <span class="info-value" id="bios-detail-version">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Release Date:</span>
+                  <span class="info-value" id="bios-date">Loading...</span>
+                </div>
+              </div>
+              
+              <div class="info-group">
+                <h4>System Information</h4>
+                <div class="info-item">
+                  <span class="info-label">Manufacturer:</span>
+                  <span class="info-value" id="system-manufacturer">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Model:</span>
+                  <span class="info-value" id="system-model">Loading...</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">UUID:</span>
+                  <span class="info-value" id="system-uuid">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="memory-layout" id="memory-layout">
+            <h4>Memory Configuration</h4>
+            <div class="memory-slots" id="memory-slots-detail">
+              Loading memory layout...
+            </div>
+          </div>
+          
+          <div class="expansion-slots" id="expansion-slots">
+            <h4>Expansion Cards & Devices</h4>
+            <div class="expansion-content" id="expansion-content">
+              Loading expansion information...
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  updateMotherboardDetailedContent(stats) {
+    if (!stats.motherboard || stats.motherboard.error) {
+      const motherboardContent = document.getElementById('motherboard-content');
+      if (motherboardContent) {
+        motherboardContent.innerHTML = `
+          <div class="chart-no-data">
+            <p>Motherboard information unavailable</p>
+            <small>Unable to retrieve motherboard details from this system</small>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    const mb = stats.motherboard;
+    
+    // Update health indicators
+    document.getElementById('motherboard-health-score').textContent = 
+      mb.motherboard.manufacturer !== 'Unknown' ? 'Good' : 'Limited Detection';
+    
+    if (mb.stats.biosAge) {
+      const years = Math.floor(mb.stats.biosAge / 365);
+      const days = mb.stats.biosAge % 365;
+      document.getElementById('bios-age').textContent = 
+        `${years > 0 ? years + 'y ' : ''}${days}d`;
+    } else {
+      document.getElementById('bios-age').textContent = 'Unknown';
+    }
+    
+    document.getElementById('memory-utilization').textContent = 
+      `${mb.stats.memoryUtilization.toFixed(1)}%`;
+
+    // Update motherboard info
+    document.getElementById('mb-manufacturer').textContent = mb.motherboard.manufacturer;
+    document.getElementById('mb-model').textContent = mb.motherboard.model;
+    document.getElementById('mb-version').textContent = mb.motherboard.version;
+    document.getElementById('mb-serial').textContent = 
+      mb.motherboard.serialNumber !== 'Not Available' ? mb.motherboard.serialNumber : 'Not Available';
+
+    // Update BIOS info
+    document.getElementById('bios-vendor').textContent = mb.bios.vendor;
+    document.getElementById('bios-detail-version').textContent = mb.bios.version;
+    document.getElementById('bios-date').textContent = mb.bios.releaseDate;
+
+    // Update system info
+    document.getElementById('system-manufacturer').textContent = mb.system.manufacturer;
+    document.getElementById('system-model').textContent = mb.system.model;
+    document.getElementById('system-uuid').textContent = 
+      mb.system.uuid !== 'Not Available' ? mb.system.uuid.substring(0, 16) + '...' : 'Not Available';
+
+    // Update memory layout
+    this.updateMemoryLayout(mb.memory);
+    
+    // Update expansion slots
+    this.updateExpansionSlots(mb.expansionSlots, mb.usb);
+  }
+
+  updateMemoryLayout(memoryInfo) {
+    const memorySlotDetail = document.getElementById('memory-slots-detail');
+    if (!memorySlotDetail) return;
+
+    if (memoryInfo.slots.length === 0) {
+      memorySlotDetail.innerHTML = '<p>No memory slot information available</p>';
+      return;
+    }
+
+    let slotsHtml = '<div class="memory-slots-grid">';
+    memoryInfo.slots.forEach((slot, index) => {
+      const isEmpty = slot.size === 0;
+      const formattedSize = isEmpty ? 'Empty' : this.formatBytes(slot.size);
+      
+      slotsHtml += `
+        <div class="memory-slot ${isEmpty ? 'empty' : 'occupied'}">
+          <div class="slot-header">
+            <span class="slot-name">${slot.deviceLocator || `Slot ${index + 1}`}</span>
+            <span class="slot-size">${formattedSize.value || formattedSize} ${formattedSize.unit || ''}</span>
+          </div>
+          ${!isEmpty ? `
+            <div class="slot-details">
+              <div>Type: ${slot.type}</div>
+              <div>Speed: ${slot.clockConfigured || 'Unknown'} MHz</div>
+              <div>Manufacturer: ${slot.manufacturer}</div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+    slotsHtml += '</div>';
+    
+    memorySlotDetail.innerHTML = slotsHtml;
+  }
+
+  updateExpansionSlots(expansionSlots, usb) {
+    const expansionContent = document.getElementById('expansion-content');
+    if (!expansionContent) return;
+
+    let html = '';
+    
+    // Graphics cards
+    if (expansionSlots.graphics.length > 0) {
+      html += '<div class="expansion-category"><h5>Graphics Cards</h5>';
+      expansionSlots.graphics.forEach(gpu => {
+        html += `
+          <div class="expansion-item">
+            <span class="item-name">${gpu.model}</span>
+            <span class="item-details">${gpu.vendor} | ${gpu.bus}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    // Audio devices
+    if (expansionSlots.audio.length > 0) {
+      html += '<div class="expansion-category"><h5>Audio Devices</h5>';
+      expansionSlots.audio.forEach(audio => {
+        html += `
+          <div class="expansion-item">
+            <span class="item-name">${audio.name}</span>
+            <span class="item-details">${audio.manufacturer}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    // Network interfaces
+    if (expansionSlots.network.length > 0) {
+      html += '<div class="expansion-category"><h5>Network Interfaces</h5>';
+      expansionSlots.network.forEach(net => {
+        html += `
+          <div class="expansion-item">
+            <span class="item-name">${net.name}</span>
+            <span class="item-details">${net.type} | ${net.speed || 'Unknown speed'}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    // USB devices (show only a few key ones)
+    if (usb.devices.length > 0) {
+      html += '<div class="expansion-category"><h5>USB Devices</h5>';
+      const keyDevices = usb.devices.slice(0, 5); // Show first 5
+      keyDevices.forEach(device => {
+        html += `
+          <div class="expansion-item">
+            <span class="item-name">${device.name}</span>
+            <span class="item-details">${device.vendor}</span>
+          </div>
+        `;
+      });
+      if (usb.devices.length > 5) {
+        html += `<div class="expansion-item"><span class="item-name">... and ${usb.devices.length - 5} more devices</span></div>`;
+      }
+      html += '</div>';
+    }
+
+    expansionContent.innerHTML = html || '<p>No expansion information available</p>';
+  }
+
+  formatBytes(bytes) {
+    if (bytes === 0) return { value: 0, unit: 'B' };
+    
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return {
+      value: parseFloat((bytes / Math.pow(k, i)).toFixed(2)),
+      unit: sizes[i]
+    };
   }
 
   showLoadingContent(sectionName) {

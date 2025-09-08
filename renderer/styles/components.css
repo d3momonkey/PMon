@@ -203,6 +203,192 @@
   color: var(--accent-color);
 }
 
+.motherboard-card .metric-value {
+  color: var(--info-color);
+}
+
+/* Motherboard Card Specific Styles */
+.motherboard-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+.motherboard-brand {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.motherboard-details {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.motherboard-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: auto;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+
+/* Motherboard Detail Section Styles */
+.motherboard-overview {
+  width: 100%;
+}
+
+.health-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+}
+
+.health-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+}
+
+.health-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.health-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.memory-layout, .expansion-slots {
+  margin-top: var(--spacing-xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+}
+
+.memory-layout h4, .expansion-slots h4 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-sm);
+}
+
+.memory-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.memory-slot {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  transition: border-color var(--transition-speed) ease;
+}
+
+.memory-slot.occupied {
+  border-color: var(--success-color);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.memory-slot.empty {
+  border-color: var(--border-color);
+  opacity: 0.6;
+}
+
+.slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.slot-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.slot-size {
+  color: var(--accent-color);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.slot-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.expansion-category {
+  margin-bottom: var(--spacing-lg);
+}
+
+.expansion-category:last-child {
+  margin-bottom: 0;
+}
+
+.expansion-category h5 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.expansion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-xs);
+}
+
+.expansion-item:last-child {
+  margin-bottom: 0;
+}
+
+.item-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.item-details {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
 /* Detail Grid Layout */
 .detail-grid {
   display: grid;

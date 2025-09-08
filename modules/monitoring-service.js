@@ -5,6 +5,7 @@ const gpuModule = require('./gpu');
 const npuModule = require('./npu');
 const storageModule = require('./storage');
 const networkModule = require('./network');
+const motherboardModule = require('./motherboard');
 
 class MonitoringService extends EventEmitter {
   constructor() {
@@ -18,7 +19,8 @@ class MonitoringService extends EventEmitter {
       gpu: null,
       npu: null,
       storage: null,
-      network: null
+      network: null,
+      motherboard: null
     };
   }
 
@@ -81,6 +83,14 @@ class MonitoringService extends EventEmitter {
         this.stats.gpu = gpuStats;
         this.stats.npu = npuStats;
         this.stats.storage = storageStats;
+      }
+
+      // Update motherboard info very infrequently (every 30 seconds)
+      const shouldUpdateMotherboard = timestamp % 30000 < 1000;
+      
+      if (shouldUpdateMotherboard || !this.stats.motherboard) {
+        const motherboardStats = await motherboardModule.getStats();
+        this.stats.motherboard = motherboardStats;
       }
 
       this.stats.timestamp = timestamp;

@@ -61,6 +61,10 @@
                         <span class="nav-icon">🌐</span>
                         <span class="nav-label">Network</span>
                     </button>
+                    <button class="nav-item" data-section="motherboard">
+                        <span class="nav-icon">🖥️</span>
+                        <span class="nav-label">Motherboard</span>
+                    </button>
                 </nav>
             </aside>
 
@@ -179,6 +183,32 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Motherboard Card -->
+                        <div class="metric-card motherboard-card">
+                            <div class="card-header">
+                                <h3>Motherboard</h3>
+                                <div class="metric-value" id="motherboard-health">--</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="motherboard-info">
+                                    <div class="motherboard-brand" id="motherboard-brand">Loading...</div>
+                                    <div class="motherboard-details">
+                                        <span id="motherboard-model">Detecting...</span>
+                                    </div>
+                                    <div class="motherboard-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-label">BIOS:</span>
+                                            <span class="stat-value" id="bios-version">--</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Memory Slots:</span>
+                                            <span class="stat-value" id="memory-slots">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -266,6 +296,13 @@
                         <h2>Network Details</h2>
                     </div>
                     <div id="network-content">Loading network information...</div>
+                </section>
+
+                <section id="motherboard-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Motherboard Details</h2>
+                    </div>
+                    <div id="motherboard-content">Loading motherboard information...</div>
                 </section>
             </div>
         </main>
