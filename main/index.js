@@ -63,8 +63,8 @@ class PMon {
     });
 
     if (isDev) {
-      this.mainWindow.webContents.openDevTools();
-      console.log('Development mode - DevTools opened automatically');
+      // this.mainWindow.webContents.openDevTools();
+      console.log('Development mode - DevTools available via F12 or View menu');
     }
 
     this.mainWindow.on('closed', () => {
