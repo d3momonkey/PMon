@@ -1,0 +1,212 @@
+/* Chart Container Styles */
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
+  min-height: 250px;
+  max-height: 500px;
+}
+
+.chart-container canvas {
+  background-color: transparent !important;
+}
+
+/* Mini Chart Specific Styles */
+.mini-chart {
+  background-color: transparent !important;
+  height: 60px;
+  width: 100%;
+  max-height: 60px;
+  max-width: 100%;
+  position: relative;
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+.mini-chart canvas {
+  max-height: 60px !important;
+  max-width: 100% !important;
+  height: 60px !important;
+  position: relative;
+}
+
+/* Chart.js Theme Customizations */
+.chart-dark {
+  color: var(--text-primary);
+}
+
+.chart-light {
+  color: var(--text-primary);
+}
+
+/* Custom Chart Colors */
+:root {
+  /* CPU Chart Colors */
+  --chart-cpu-primary: #2196f3;
+  --chart-cpu-secondary: rgba(33, 150, 243, 0.2);
+  
+  /* Memory Chart Colors */
+  --chart-memory-primary: #007acc;
+  --chart-memory-secondary: rgba(0, 122, 204, 0.2);
+  
+  /* GPU Chart Colors */
+  --chart-gpu-primary: #4caf50;
+  --chart-gpu-secondary: rgba(76, 175, 80, 0.2);
+  
+  /* Network Chart Colors */
+  --chart-network-rx: #2196f3;
+  --chart-network-tx: #ff9800;
+  --chart-network-rx-bg: rgba(33, 150, 243, 0.1);
+  --chart-network-tx-bg: rgba(255, 152, 0, 0.1);
+  
+  /* Storage Chart Colors */
+  --chart-storage-read: #2196f3;
+  --chart-storage-write: #ff9800;
+  --chart-storage-read-bg: rgba(33, 150, 243, 0.1);
+  --chart-storage-write-bg: rgba(255, 152, 0, 0.1);
+  
+  /* NPU Chart Colors */
+  --chart-npu-primary: #9c27b0;
+  --chart-npu-secondary: rgba(156, 39, 176, 0.2);
+  
+  /* Grid and Axis Colors */
+  --chart-grid-color: var(--border-color);
+  --chart-text-color: var(--text-secondary);
+  --chart-tick-color: var(--text-muted);
+}
+
+/* Chart Responsive Styles */
+@media (max-width: 1200px) {
+  .chart-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+  }
+  
+  .mini-chart {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    height: 200px;
+  }
+}
+
+/* Chart Loading State */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.chart-loading::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--spacing-sm);
+}
+
+/* Chart Error State */
+.chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--error-color);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+/* Chart No Data State */
+.chart-no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+/* Chart Legend Styles */
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  font-size: 0.8rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+/* Chart Tooltips (when using custom tooltips) */
+.chart-tooltip {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-small);
+  padding: var(--spacing-sm);
+  box-shadow: var(--shadow);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.tooltip-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: 2px;
+}
+
+.tooltip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.tooltip-label {
+  color: var(--text-secondary);
+}
+
+.tooltip-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--text-primary);
+}

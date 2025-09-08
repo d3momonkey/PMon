@@ -1,0 +1,487 @@
+/* Metric Cards */
+.metric-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow);
+  transition: all var(--transition-speed) ease;
+  cursor: pointer;
+  min-height: 200px;
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.metric-card:hover {
+  background-color: var(--bg-card-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  flex: 1;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.metric-details {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mini Charts */
+.mini-chart {
+  height: 60px;
+  width: 100%;
+}
+
+/* Progress Ring for Memory */
+.progress-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  align-self: center;
+}
+
+.progress-ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle-bg {
+  fill: none;
+  stroke: var(--border-color);
+  stroke-width: 4;
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke: var(--accent-color);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 201.06; /* 2 * π * 32 */
+  stroke-dashoffset: 201.06;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Storage Bars */
+.storage-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.storage-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.8rem;
+}
+
+.bar-label {
+  min-width: 40px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.bar-container {
+  flex: 1;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.storage-bar:first-child .bar-fill {
+  background-color: var(--info-color);
+}
+
+.storage-bar:last-child .bar-fill {
+  background-color: var(--warning-color);
+}
+
+.bar-value {
+  min-width: 60px;
+  text-align: right;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+
+/* NPU Status Indicator */
+.npu-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  transition: background-color var(--transition-speed) ease;
+}
+
+.status-indicator.active {
+  background-color: var(--success-color);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+.status-indicator.inactive {
+  background-color: var(--text-muted);
+}
+
+.status-indicator.error {
+  background-color: var(--error-color);
+}
+
+/* Color Variations for Cards */
+.cpu-card .metric-value {
+  color: var(--info-color);
+}
+
+.memory-card .metric-value {
+  color: var(--accent-color);
+}
+
+.gpu-card .metric-value {
+  color: var(--success-color);
+}
+
+.storage-card .metric-value {
+  color: var(--warning-color);
+}
+
+.network-card .metric-value {
+  color: var(--info-color);
+}
+
+.npu-card .metric-value {
+  color: var(--accent-color);
+}
+
+/* Detail Grid Layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  height: auto;
+  min-height: 400px;
+}
+
+.chart-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  min-height: 300px;
+}
+
+.chart-container h4 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.chart-container canvas {
+  flex: 1;
+  min-height: 200px;
+}
+
+.info-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  height: fit-content;
+}
+
+.info-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.info-group:last-child {
+  margin-bottom: 0;
+}
+
+.info-group h4 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Network and Storage specific styles */
+.network-overview {
+  width: 100%;
+}
+
+.network-item, .storage-item {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.network-header, .storage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 500;
+}
+
+.iface-name, .fs-name {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.iface-status.active {
+  color: var(--success-color);
+}
+
+.iface-status.inactive {
+  color: var(--text-muted);
+}
+
+.fs-usage {
+  color: var(--accent-color);
+  font-family: 'Courier New', monospace;
+}
+
+.network-details, .network-stats, .fs-details {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 4px;
+  margin: var(--spacing-sm) 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Chart no data message */
+.chart-no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.npu-card .metric-value {
+  color: var(--text-secondary);
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error States */
+.error {
+  border-color: var(--error-color);
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.error .metric-value {
+  color: var(--error-color);
+}
+
+/* Success States */
+.success .metric-value {
+  color: var(--success-color);
+}
+
+/* Warning States */
+.warning .metric-value {
+  color: var(--warning-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metric-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .metric-card {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .metric-card {
+    padding: var(--spacing-md);
+    min-height: 160px;
+  }
+  
+  .metric-value {
+    font-size: 1.2rem;
+  }
+  
+  .progress-ring {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .storage-bars {
+    gap: var(--spacing-xs);
+  }
+  
+  .mini-chart {
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metric-card {
+    min-height: 140px;
+    padding: var(--spacing-sm);
+  }
+  
+  .card-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .metric-value {
+    font-size: 1.1rem;
+  }
+  
+  .metric-details {
+    font-size: 0.75rem;
+  }
+}

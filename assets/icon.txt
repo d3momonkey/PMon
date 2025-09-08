@@ -1,0 +1,18 @@
+PMon Icon Placeholder
+
+This is a placeholder for the PMon application icon.
+For a production build, you would replace this with:
+
+- icon.png (512x512 for macOS)
+- icon.ico (for Windows)
+- icon.icns (for macOS)
+- Various icon sizes for different platforms
+
+The icon should represent performance monitoring, 
+such as a chart, graph, or system monitoring symbol.
+
+Suggested icon elements:
+- ⚡ Lightning bolt for performance
+- 📊 Chart/graph for monitoring
+- 🖥️ Computer/system representation
+- Modern, clean design matching the app's aesthetic

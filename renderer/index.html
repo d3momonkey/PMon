@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMon - Performance Monitor</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/charts.css">
+</head>
+<body class="theme-dark">
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <span class="app-icon">⚡</span>
+                    PMon
+                </h1>
+                <div class="header-controls">
+                    <button id="theme-toggle" class="btn-icon" title="Toggle Theme">
+                        <span class="icon-theme">🌙</span>
+                    </button>
+                    <div class="system-info">
+                        <span id="system-name"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Sidebar -->
+            <aside class="app-sidebar">
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" data-section="overview">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Overview</span>
+                    </button>
+                    <button class="nav-item" data-section="cpu">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">CPU</span>
+                    </button>
+                    <button class="nav-item" data-section="memory">
+                        <span class="nav-icon">🧠</span>
+                        <span class="nav-label">Memory</span>
+                    </button>
+                    <button class="nav-item" data-section="gpu">
+                        <span class="nav-icon">🎮</span>
+                        <span class="nav-label">GPU</span>
+                    </button>
+                    <button class="nav-item" data-section="npu">
+                        <span class="nav-icon">🤖</span>
+                        <span class="nav-label">NPU</span>
+                    </button>
+                    <button class="nav-item" data-section="storage">
+                        <span class="nav-icon">💽</span>
+                        <span class="nav-label">Storage</span>
+                    </button>
+                    <button class="nav-item" data-section="network">
+                        <span class="nav-icon">🌐</span>
+                        <span class="nav-label">Network</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="app-content">
+                <!-- Overview Section -->
+                <section id="overview-section" class="content-section active">
+                    <div class="section-header">
+                        <h2>System Overview</h2>
+                        <div class="last-updated">
+                            Last updated: <span id="last-updated-time">--</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-grid">
+                        <!-- CPU Card -->
+                        <div class="metric-card cpu-card">
+                            <div class="card-header">
+                                <h3>CPU</h3>
+                                <div class="metric-value" id="cpu-usage">--%</div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="cpu-mini-chart" class="mini-chart"></canvas>
+                                <div class="metric-details">
+                                    <span id="cpu-name">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Memory Card -->
+                        <div class="metric-card memory-card">
+                            <div class="card-header">
+                                <h3>Memory</h3>
+                                <div class="metric-value" id="memory-usage">--%</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress-ring" id="memory-progress">
+                                    <svg class="progress-ring-svg">
+                                        <circle class="progress-ring-circle-bg" cx="40" cy="40" r="32"></circle>
+                                        <circle class="progress-ring-circle" cx="40" cy="40" r="32"></circle>
+                                    </svg>
+                                </div>
+                                <div class="metric-details">
+                                    <span id="memory-details">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GPU Card -->
+                        <div class="metric-card gpu-card">
+                            <div class="card-header">
+                                <h3>GPU</h3>
+                                <div class="metric-value" id="gpu-usage">--%</div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="gpu-mini-chart" class="mini-chart"></canvas>
+                                <div class="metric-details">
+                                    <span id="gpu-name">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Storage Card -->
+                        <div class="metric-card storage-card">
+                            <div class="card-header">
+                                <h3>Storage</h3>
+                                <div class="metric-value" id="storage-usage">--%</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="storage-bars">
+                                    <div class="storage-bar">
+                                        <div class="bar-label">Read</div>
+                                        <div class="bar-container">
+                                            <div class="bar-fill" id="storage-read-bar"></div>
+                                        </div>
+                                        <div class="bar-value" id="storage-read-value">0 B/s</div>
+                                    </div>
+                                    <div class="storage-bar">
+                                        <div class="bar-label">Write</div>
+                                        <div class="bar-container">
+                                            <div class="bar-fill" id="storage-write-bar"></div>
+                                        </div>
+                                        <div class="bar-value" id="storage-write-value">0 B/s</div>
+                                    </div>
+                                </div>
+                                <div class="metric-details">
+                                    <span id="storage-details">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Network Card -->
+                        <div class="metric-card network-card">
+                            <div class="card-header">
+                                <h3>Network</h3>
+                                <div class="metric-value" id="network-connections">--</div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="network-mini-chart" class="mini-chart"></canvas>
+                                <div class="metric-details">
+                                    <span id="network-details">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NPU Card -->
+                        <div class="metric-card npu-card">
+                            <div class="card-header">
+                                <h3>NPU</h3>
+                                <div class="metric-value" id="npu-status">--</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="npu-status">
+                                    <div class="status-indicator" id="npu-indicator"></div>
+                                    <span id="npu-details">Checking...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Individual Detail Sections (Hidden by default) -->
+                <section id="cpu-section" class="content-section">
+                    <div class="section-header">
+                        <h2>CPU Details</h2>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="chart-container">
+                            <canvas id="cpu-main-chart"></canvas>
+                        </div>
+                        <div class="info-panel">
+                            <div class="info-group">
+                                <h4>Processor Information</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Brand:</span>
+                                    <span class="info-value" id="cpu-brand">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Cores:</span>
+                                    <span class="info-value" id="cpu-cores">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Speed:</span>
+                                    <span class="info-value" id="cpu-speed">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="memory-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Memory Details</h2>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="chart-container">
+                            <canvas id="memory-main-chart"></canvas>
+                        </div>
+                        <div class="info-panel">
+                            <div class="info-group">
+                                <h4>Memory Information</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Total:</span>
+                                    <span class="info-value" id="memory-total">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Used:</span>
+                                    <span class="info-value" id="memory-used">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Available:</span>
+                                    <span class="info-value" id="memory-available">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Additional sections for GPU, NPU, Storage, Network would follow similar patterns -->
+                <section id="gpu-section" class="content-section">
+                    <div class="section-header">
+                        <h2>GPU Details</h2>
+                    </div>
+                    <div id="gpu-content">Loading GPU information...</div>
+                </section>
+
+                <section id="npu-section" class="content-section">
+                    <div class="section-header">
+                        <h2>NPU Details</h2>
+                    </div>
+                    <div id="npu-content">Checking for NPU availability...</div>
+                </section>
+
+                <section id="storage-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Storage Details</h2>
+                    </div>
+                    <div id="storage-content">Loading storage information...</div>
+                </section>
+
+                <section id="network-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Network Details</h2>
+                    </div>
+                    <div id="network-content">Loading network information...</div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scripts/charts.js"></script>
+    <script src="scripts/components.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
