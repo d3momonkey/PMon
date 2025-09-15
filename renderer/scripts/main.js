@@ -644,10 +644,6 @@ updateDetailedContent(stats) {
                     <span class="info-label">Available Space:</span>
                     <span class="info-value">${formattedTotalAvailable}</span>
                   </div>
-                  <div class="info-item">
-                    <span class="info-label">Usage Percentage:</span>
-                    <span class="info-value">${totalUsagePercent.toFixed(1)}%</span>
-                  </div>
                 </div>
                 
                 <div class="info-group">
@@ -1181,10 +1177,6 @@ onThemeChanged() {
                 </div>
                 <div class="info-item">
                   <span class="info-label">Available Space:</span>
-                  <span class="info-value">Loading...</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Usage Percentage:</span>
                   <span class="info-value">Loading...</span>
                 </div>
               </div>
