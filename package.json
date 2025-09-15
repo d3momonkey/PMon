@@ -1,6 +1,6 @@
 {
   "name": "pmon",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "PMon - A sleek, cross-platform performance monitor",
   "main": "main/index.js",
   "scripts": {
