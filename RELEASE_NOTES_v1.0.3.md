@@ -1,5 +1,9 @@
 # PMon v1.0.3 Release Notes
 
+**Author:** Craig Raymond  
+**Developer:** DemoMonkey Studios  
+**License:** MIT
+
 ## Overview
 PMon is a cross-platform performance monitoring application built with Electron, providing real-time system monitoring with a modern, responsive interface.
 

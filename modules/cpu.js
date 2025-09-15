@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * CPU Monitoring Module
+ * 
+ * @description CPU performance monitoring and information collection
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const si = require('systeminformation');
 
 class CPUMonitor {

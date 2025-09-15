@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Memory Monitoring Module
+ * 
+ * @description System memory and swap monitoring with usage statistics
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const si = require('systeminformation');
 
 class MemoryMonitor {

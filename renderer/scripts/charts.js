@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Chart Management System
+ * 
+ * @description Chart.js integration and visualization management
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 class ChartManager {
   constructor() {
     this.charts = new Map();

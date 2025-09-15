@@ -1,5 +1,10 @@
 # WARP.md
 
+**PMon - Performance Monitor**  
+**Author:** Craig Raymond  
+**Developer:** DemoMonkey Studios  
+**Version:** 1.0.3
+
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
 ## Common Development Commands

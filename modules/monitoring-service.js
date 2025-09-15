@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Monitoring Service Module
+ * 
+ * @description Core monitoring service that orchestrates system data collection
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const EventEmitter = require('events');
 const cpuModule = require('./cpu');
 const memoryModule = require('./memory');

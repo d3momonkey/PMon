@@ -1,4 +1,15 @@
-// Utility functions and components for PMon
+/**
+ * PMon - Performance Monitor
+ * UI Components and Utilities
+ * 
+ * @description Shared UI components and utility functions
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
+// Utility functions and shared components
 
 // Format bytes utility function
 function formatBytes(bytes, decimals = 2) {

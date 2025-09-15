@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Network Monitoring Module
+ * 
+ * @description Network interface monitoring and traffic statistics
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const si = require('systeminformation');
 
 class NetworkMonitor {

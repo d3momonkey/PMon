@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Motherboard Information Module
+ * 
+ * @description Motherboard, BIOS, and system hardware information collection
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const si = require('systeminformation');
 
 class MotherboardMonitor {

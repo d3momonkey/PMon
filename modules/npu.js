@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * NPU Detection Module
+ * 
+ * @description Neural Processing Unit detection and monitoring
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const { exec } = require('child_process');
 const util = require('util');
 

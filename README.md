@@ -1,5 +1,10 @@
 # PMon - Cross-Platform Performance Monitor
 
+**Author:** Craig Raymond  
+**Developer:** DemoMonkey Studios  
+**Version:** 1.0.3  
+**License:** MIT  
+
 ![PMon Screenshot](assets/screenshot.png)
 
 **PMon** is a sleek, modern system performance monitor built with Electron. It provides real-time monitoring of your system's CPU, Memory, GPU, Storage, Network, and NPU (Neural Processing Unit) with beautiful animated charts and a responsive dark/light theme interface.
@@ -283,6 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ for system monitoring enthusiasts**
+**Made with ❤️ by Craig Raymond for system monitoring enthusiasts**  
+**Developed by DemoMonkey Studios**
 
 *PMon - Know your system, optimize your workflow.*

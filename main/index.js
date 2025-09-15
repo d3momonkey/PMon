@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Main Process Entry Point
+ * 
+ * @description Cross-platform performance monitoring application built with Electron
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const { app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
 const path = require('path');
 const isDev = process.argv.includes('--dev');

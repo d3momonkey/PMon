@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Main Renderer Script
+ * 
+ * @description Main application UI controller and data management
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 class PMon {
   constructor() {
     this.chartManager = new ChartManager();

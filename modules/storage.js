@@ -1,3 +1,14 @@
+/**
+ * PMon - Performance Monitor
+ * Storage Monitoring Module
+ * 
+ * @description Storage device monitoring, filesystem information, and I/O statistics
+ * @author Craig Raymond
+ * @developer DemoMonkey Studios
+ * @version 1.0.3
+ * @license MIT
+ */
+
 const si = require('systeminformation');
 
 class StorageMonitor {

@@ -11,7 +11,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["performance", "monitor", "system", "cross-platform", "electron"],
-  "author": "badde",
+  "author": {
+    "name": "Craig Raymond",
+    "email": "craig@demomonkey.com",
+    "url": "https://github.com/d3momonkey"
+  },
+  "contributors": [
+    {
+      "name": "DemoMonkey Studios",
+      "url": "https://demomonkey.com"
+    }
+  ],
   "license": "MIT",
   "type": "commonjs",
 "build": {
