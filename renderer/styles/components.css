@@ -7,13 +7,14 @@
   box-shadow: var(--shadow);
   transition: all var(--transition-speed) ease;
   cursor: pointer;
-  min-height: 200px;
-  max-height: 300px;
+  min-height: 180px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
   box-sizing: border-box;
+  aspect-ratio: 3/2;
 }
 
 .metric-card:hover {
@@ -29,6 +30,8 @@
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  min-height: 2.5em;
 }
 
 .card-header h3 {
@@ -43,6 +46,11 @@
   font-weight: 700;
   color: var(--text-primary);
   font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .card-body {
@@ -58,14 +66,19 @@
   font-size: 0.85rem;
   color: var(--text-muted);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 2.2em;
 }
 
 /* Mini Charts */
 .mini-chart {
   height: 60px;
   width: 100%;
+  min-height: 40px;
+  flex-shrink: 0;
 }
 
 /* Progress Ring for Memory */
@@ -74,6 +87,7 @@
   width: 80px;
   height: 80px;
   align-self: center;
+  flex-shrink: 0;
 }
 
 .progress-ring-svg {
@@ -103,6 +117,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  flex: 1;
+  min-height: 0;
 }
 
 .storage-bar {
@@ -154,7 +170,10 @@
 .npu-status {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-sm);
+  flex: 1;
+  text-align: center;
 }
 
 .status-indicator {
@@ -211,8 +230,10 @@
 .motherboard-info {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   height: 100%;
+  min-height: 0;
+  flex: 1;
 }
 
 .motherboard-brand {
@@ -232,13 +253,17 @@
   flex-direction: column;
   gap: var(--spacing-xs);
   margin-top: auto;
+  min-height: 0;
+  flex-shrink: 0;
 }
 
 .stat-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
+  align-items: flex-start;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  gap: var(--spacing-xs);
 }
 
 .stat-label {
@@ -249,7 +274,12 @@
 .stat-value {
   color: var(--text-primary);
   font-family: 'Courier New', monospace;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 /* Motherboard Detail Section Styles */
@@ -807,16 +837,46 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .metric-card {
-    min-height: 180px;
+    min-height: 170px;
+    aspect-ratio: 1.4/1;
+  }
+}
+
+@media (max-width: 1100px) {
+  .metric-card {
+    min-height: 160px;
+    padding: var(--spacing-md);
+    aspect-ratio: 1.3/1;
+  }
+  
+  .metric-value {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .metric-card {
+    min-height: 150px;
+    aspect-ratio: 1.2/1;
+  }
+  
+  .progress-ring {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .mini-chart {
+    height: 55px;
   }
 }
 
 @media (max-width: 768px) {
   .metric-card {
     padding: var(--spacing-md);
-    min-height: 160px;
+    min-height: 140px;
+    aspect-ratio: auto;
   }
   
   .metric-value {
@@ -833,13 +893,21 @@
   }
   
   .mini-chart {
-    height: 50px;
+    height: 45px;
+  }
+  
+  .motherboard-stats {
+    gap: 2px;
+  }
+  
+  .stat-item {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
   .metric-card {
-    min-height: 140px;
+    min-height: 120px;
     padding: var(--spacing-sm);
   }
   
@@ -848,11 +916,26 @@
   }
   
   .metric-value {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   
   .metric-details {
     font-size: 0.75rem;
+    -webkit-line-clamp: 1;
+  }
+  
+  .mini-chart {
+    height: 35px;
+  }
+  
+  .motherboard-info {
+    gap: 2px;
+  }
+  
+  .stat-item {
+    font-size: 0.65rem;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

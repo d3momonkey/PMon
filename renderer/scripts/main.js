@@ -585,10 +585,25 @@ updateDetailedContent(stats) {
 // Storage Section
     if (this.currentSection === 'storage') {
       const storageContent = document.getElementById('storage-content');
-      if (storageContent && stats.storage) {
+      
+      if (storageContent) {
+        if (!stats.storage || !stats.storage.filesystem || stats.storage.filesystem.length === 0) {
+          // Show loading or no data message
+          const hasStorageData = stats.storage ? 'No storage devices detected' : 'Loading storage information...';
+          storageContent.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; min-height: 300px; color: var(--text-muted); font-style: italic;">
+              ${hasStorageData}<br><small>Checking filesystem and disk data</small>
+            </div>
+          `;
+          return;
+        }
         
-        // Only create the HTML structure once
-        if (!storageContent.querySelector('.storage-overview')) {
+        // Create the HTML structure if it doesn't exist, or update drives if needed
+        const storageOverview = storageContent.querySelector('.storage-overview');
+        const needsInitialSetup = !storageOverview;
+        const needsDriveUpdate = storageOverview && !storageOverview.querySelector('.drive-item');
+        
+        if (needsInitialSetup) {
           let html = '<div class="storage-overview">';
           
           // Calculate total storage statistics for overview
@@ -596,7 +611,7 @@ updateDetailedContent(stats) {
           let totalUsed = 0;
           let totalAvailable = 0;
           
-          stats.storage.filesystem.forEach(fs => {
+          (stats.storage.filesystem || []).forEach(fs => {
             totalSize += fs.size || 0;
             totalUsed += fs.used || 0;
             totalAvailable += fs.available || 0;
@@ -651,7 +666,7 @@ updateDetailedContent(stats) {
           `;
           
           // Individual Drive Details
-          if (stats.storage.filesystem.length > 0) {
+          if (stats.storage.filesystem && stats.storage.filesystem.length > 0) {
             html += '<div class="info-group drive-details"><h4>Individual Drives</h4>';
             stats.storage.filesystem.forEach((fs, index) => {
               // Determine drive type indicator
@@ -707,6 +722,57 @@ updateDetailedContent(stats) {
           setTimeout(() => {
             this.createStorageChart();
           }, 100);
+        } else if (needsDriveUpdate) {
+          // Update only the individual drives section if it's missing
+          const driveDetailsSection = storageOverview.querySelector('.drive-details');
+          if (driveDetailsSection && stats.storage.filesystem && stats.storage.filesystem.length > 0) {
+            let driveHtml = '<h4>Individual Drives</h4>';
+            stats.storage.filesystem.forEach((fs, index) => {
+              // Determine drive type indicator
+              const driveType = this.getDriveTypeInfo(fs.fs, fs.type);
+              const driveClass = driveType.name.toLowerCase().replace(' ', '-');
+              const driveId = `drive-${fs.fs.replace(':', '').replace('/', '-')}`;
+              
+              driveHtml += `
+                <div class="storage-item drive-item ${driveClass}" id="${driveId}">
+                  <div class="storage-header">
+                    <div class="drive-info">
+                      <span class="drive-icon" title="${driveType.description}">${driveType.icon}</span>
+                      <div class="drive-names">
+                        <span class="fs-name">${fs.fs}</span>
+                        <span class="drive-type">${driveType.name}</span>
+                      </div>
+                    </div>
+                    <span class="fs-usage" id="${driveId}-usage">${fs.usagePercent.toFixed(1)}%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" id="${driveId}-progress" style="width: ${Math.min(fs.usagePercent, 100)}%"></div>
+                  </div>
+                  <div class="fs-details">
+                    <div class="fs-detail-grid">
+                      <div class="detail-item">
+                        <span class="detail-label">Used:</span>
+                        <span class="detail-value" id="${driveId}-used">${fs.formatted.used.value} ${fs.formatted.used.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Available:</span>
+                        <span class="detail-value" id="${driveId}-available">${fs.formatted.available.value} ${fs.formatted.available.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value" id="${driveId}-total">${fs.formatted.size.value} ${fs.formatted.size.unit}</span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="detail-label">File System:</span>
+                        <span class="detail-value" id="${driveId}-type">${fs.type || 'Unknown'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+            driveDetailsSection.innerHTML = driveHtml;
+          }
         }
         
         // Update total storage usage in the overview panel
@@ -715,7 +781,7 @@ updateDetailedContent(stats) {
           let totalUsed = 0;
           let totalAvailable = 0;
           
-          stats.storage.filesystem.forEach(fs => {
+          (stats.storage.filesystem || []).forEach(fs => {
             totalSize += fs.size || 0;
             totalUsed += fs.used || 0;
             totalAvailable += fs.available || 0;
@@ -744,8 +810,11 @@ updateDetailedContent(stats) {
           const readRate = stats.storage.io.rates.read || 0;
           const writeRate = stats.storage.io.rates.write || 0;
           
-          document.getElementById('storage-read-rate').textContent = this.chartManager.formatBytesPerSecond(readRate);
-          document.getElementById('storage-write-rate').textContent = this.chartManager.formatBytesPerSecond(writeRate);
+          const readRateEl = document.getElementById('storage-read-rate');
+          const writeRateEl = document.getElementById('storage-write-rate');
+          
+          if (readRateEl) readRateEl.textContent = window.utils.formatBytesPerSecond(readRate);
+          if (writeRateEl) writeRateEl.textContent = window.utils.formatBytesPerSecond(writeRate);
           
           // Update chart
           this.chartManager.updateChart('storage-main-chart', [readRate / 1024 / 1024, writeRate / 1024 / 1024]); // Convert to MB/s
@@ -908,8 +977,11 @@ updateDetailedContent(stats) {
           const rxRate = stats.network.totals.rates.rx || 0;
           const txRate = stats.network.totals.rates.tx || 0;
           
-          document.getElementById('network-download-rate').textContent = this.chartManager.formatBytesPerSecond(rxRate);
-          document.getElementById('network-upload-rate').textContent = this.chartManager.formatBytesPerSecond(txRate);
+          const downloadRateEl = document.getElementById('network-download-rate');
+          const uploadRateEl = document.getElementById('network-upload-rate');
+          
+          if (downloadRateEl) downloadRateEl.textContent = window.utils.formatBytesPerSecond(rxRate);
+          if (uploadRateEl) uploadRateEl.textContent = window.utils.formatBytesPerSecond(txRate);
           document.getElementById('network-active-connections').textContent = stats.network.connections.active || 0;
           
           // Update chart (convert to KB/s)
@@ -1741,15 +1813,36 @@ onThemeChanged() {
           }]
         },
         storage: {
-          filesystem: [{
-            fs: 'C:',
-            usagePercent: 65,
-            formatted: {
-              size: { value: 500, unit: 'GB' },
-              used: { value: 325, unit: 'GB' },
-              available: { value: 175, unit: 'GB' }
+          filesystem: [
+            {
+              fs: 'C:',
+              type: 'NTFS',
+              size: 500 * 1024 * 1024 * 1024,
+              used: 325 * 1024 * 1024 * 1024,
+              available: 175 * 1024 * 1024 * 1024,
+              usagePercent: 65,
+              mount: 'C:',
+              formatted: {
+                size: { value: 500, unit: 'GB' },
+                used: { value: 325, unit: 'GB' },
+                available: { value: 175, unit: 'GB' }
+              }
+            },
+            {
+              fs: 'D:',
+              type: 'NTFS',
+              size: 1024 * 1024 * 1024 * 1024,
+              used: 512 * 1024 * 1024 * 1024,
+              available: 512 * 1024 * 1024 * 1024,
+              usagePercent: 50,
+              mount: 'D:',
+              formatted: {
+                size: { value: 1.0, unit: 'TB' },
+                used: { value: 512, unit: 'GB' },
+                available: { value: 512, unit: 'GB' }
+              }
             }
-          }],
+          ],
           io: {
             rates: {
               read: Math.random() * 100 * 1024 * 1024,

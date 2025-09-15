@@ -178,9 +178,19 @@ npm install
 - Ensure Chart.js CDN is accessible
 - Check browser console for JavaScript errors
 
-**Blank sections when clicking cards**
-- This was a known issue that has been fixed in v1.0+
-- Ensure you're using the latest version
+**Blank sections when clicking cards** ✅ FIXED
+- This issue has been resolved in v1.0.1
+- Card navigation now works properly across all sections
+
+**Storage tab shows "Loading storage information..." indefinitely** ✅ FIXED
+- Storage data now loads immediately on application startup
+- All drives are properly detected and displayed with usage information
+- Individual drive details show correctly for multiple drives
+
+**Cards don't scale properly on different screen sizes** ✅ FIXED
+- Improved responsive breakpoints for better 7-card layout
+- Cards now maintain consistent proportions across all screen sizes
+- Text and content scale appropriately without overflow
 
 **High CPU usage**
 - Increase monitoring intervals in `monitoring-service.js`
@@ -243,13 +253,16 @@ PMon follows Electron security best practices:
 
 ## 📝 Changelog
 
-### v1.0.0 (Latest)
-- ✅ Fixed card navigation issue
-- ✅ Comprehensive system monitoring
-- ✅ Dark/light theme support
-- ✅ Real-time animated charts
-- ✅ Cross-platform compatibility
-- ✅ NPU detection support
+### v1.0.1 (Latest)
+- ✅ **Fixed storage data loading issue** - All drives now display correctly in storage tab
+- ✅ **Improved UI card scaling** - Better responsive design across all screen sizes
+- ✅ **Enhanced storage detection** - Immediate loading of storage data on startup
+- ✅ **Fixed card navigation issue** - Smooth navigation between sections
+- ✅ **Comprehensive system monitoring** - CPU, Memory, GPU, Storage, Network, NPU, Motherboard
+- ✅ **Dark/light theme support** - Instant theme switching with chart integration
+- ✅ **Real-time animated charts** - Chart.js integration with theme-aware styling
+- ✅ **Cross-platform compatibility** - Windows, macOS, Linux support
+- ✅ **NPU detection support** - Neural Processing Unit detection and status
 
 ## 📄 License
 

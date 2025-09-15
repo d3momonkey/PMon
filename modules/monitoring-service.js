@@ -73,7 +73,10 @@ class MonitoringService extends EventEmitter {
       // Update heavier metrics less frequently
       const shouldUpdateHeavy = timestamp % 3000 < 1000; // Every 3 seconds
       
-      if (shouldUpdateHeavy) {
+      // Ensure we get initial storage data on first run
+      const needsInitialStorage = !this.stats.storage;
+      
+      if (shouldUpdateHeavy || needsInitialStorage) {
         const [gpuStats, npuStats, storageStats] = await Promise.all([
           gpuModule.getStats(),
           npuModule.getStats(),
