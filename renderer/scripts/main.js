@@ -360,13 +360,16 @@ initializeSectionCharts(sectionName) {
       this.chartManager.updateChart('network-mini-chart', rxRate);
     }
 
-    // NPU Card
+    // NPU Card - Hide/show based on detection
+    const npuCard = document.querySelector('.npu-card');
     if (stats.npu) {
       const npuStatus = document.getElementById('npu-status');
       const npuIndicator = document.getElementById('npu-indicator');
       const npuDetails = document.getElementById('npu-details');
       
       if (stats.npu.available && stats.npu.npus.length > 0) {
+        // NPU detected - show card and update with active status
+        if (npuCard) npuCard.style.display = '';
         const npu = stats.npu.npus[0];
         if (npuStatus) npuStatus.textContent = 'Active';
         if (npuIndicator) {
@@ -374,12 +377,12 @@ initializeSectionCharts(sectionName) {
         }
         if (npuDetails) npuDetails.textContent = `${npu.vendor} ${npu.model}`;
       } else {
-        if (npuStatus) npuStatus.textContent = 'N/A';
-        if (npuIndicator) {
-          npuIndicator.className = 'status-indicator inactive';
-        }
-        if (npuDetails) npuDetails.textContent = 'No NPU detected';
+        // No NPU detected - hide the card from overview
+        if (npuCard) npuCard.style.display = 'none';
       }
+    } else {
+      // No NPU stats available - hide the card
+      if (npuCard) npuCard.style.display = 'none';
     }
 
     // Motherboard Card
@@ -577,8 +580,37 @@ updateDetailedContent(stats) {
             </div>
           `;
         } else {
-          npuContent.innerHTML = '<div class="chart-no-data">No NPU detected on this system</div>';
+          // Check if NPU was detected but no stats are available
+          const detectionStatus = stats.npu.detected ? 'detected but monitoring not available' : 'not detected';
+          const statusIcon = stats.npu.detected ? '⚠️' : '❌';
+          const statusColor = stats.npu.detected ? 'var(--accent-color)' : 'var(--text-muted)';
+          
+          npuContent.innerHTML = `
+            <div class="info-panel" style="text-align: center; padding: 2rem;">
+              <div class="chart-no-data">
+                <h4 style="margin-bottom: 1rem; color: ${statusColor};">NPU ${statusIcon} ${detectionStatus.toUpperCase()}</h4>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                  ${stats.npu.detected 
+                    ? 'An NPU was detected on this system, but monitoring APIs are not available.' 
+                    : 'No Neural Processing Unit (NPU) was found on this system.'}
+                </p>
+                <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; text-align: left; max-width: 500px; margin: 0 auto;">
+                  <h5 style="margin-bottom: 0.5rem;">NPU Support includes:</h5>
+                  <ul style="margin: 0; padding-left: 1.2rem; color: var(--text-muted);">
+                    <li>Intel NPU (Meteor Lake and newer)</li>
+                    <li>Apple Neural Engine (M1/M2/M3 series)</li>
+                    <li>AMD XDNA AI accelerators</li>
+                    <li>Qualcomm AI Engine</li>
+                  </ul>
+                  ${stats.npu.detected ? '<p style="margin-top: 1rem; font-size: 0.9em; color: var(--text-muted);"><strong>Note:</strong> NPU monitoring requires vendor-specific APIs that are not currently available in PMon.</p>' : ''}
+                </div>
+              </div>
+            </div>
+          `;
         }
+      } else {
+        // Handle case where NPU stats are not available yet
+        npuContent.innerHTML = '<div class="chart-no-data">Checking for NPU availability...</div>';
       }
     }
 

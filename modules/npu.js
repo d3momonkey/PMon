@@ -55,16 +55,11 @@ class NPUMonitor {
     if (!(await this.checkIntelNPU())) return null;
     
     try {
-      // Placeholder for Intel NPU monitoring
-      // This would typically involve Intel's NPU monitoring tools
-      // or proprietary APIs when available
-      return {
-        vendor: 'Intel',
-        model: 'Intel NPU',
-        utilization: 0, // Placeholder
-        power: 0,      // Placeholder
-        temperature: 0  // Placeholder
-      };
+      // Real Intel NPU monitoring would require Intel's NPU monitoring tools
+      // or proprietary APIs when available. For now, we only detect presence.
+      // Return null since we cannot get real stats without proper Intel NPU SDK
+      console.log('Intel NPU detected but monitoring APIs not available');
+      return null;
     } catch (error) {
       console.warn('Error getting Intel NPU stats:', error.message);
       return null;
@@ -75,15 +70,11 @@ class NPUMonitor {
     if (!(await this.checkAppleNPU())) return null;
     
     try {
-      // Placeholder for Apple Neural Engine monitoring
-      // This would require macOS-specific APIs
-      return {
-        vendor: 'Apple',
-        model: 'Neural Engine',
-        utilization: 0, // Placeholder
-        power: 0,      // Placeholder
-        operations: 0   // Operations per second
-      };
+      // Real Apple Neural Engine monitoring would require macOS-specific APIs
+      // For now, we only detect presence.
+      // Return null since we cannot get real stats without proper Apple APIs
+      console.log('Apple Neural Engine detected but monitoring APIs not available');
+      return null;
     } catch (error) {
       console.warn('Error getting Apple NPU stats:', error.message);
       return null;
@@ -113,9 +104,11 @@ class NPUMonitor {
         });
       }
 
+      // NPU is only "available" if we have actual stats, not just detection
       const stats = {
-        available: npus.length > 0,
+        available: npus.length > 0,  // Only true if we have working NPU stats
         npus: npus,
+        detected: (await this.checkIntelNPU()) || (await this.checkAppleNPU()), // Track detection separately
         timestamp: Date.now()
       };
 
