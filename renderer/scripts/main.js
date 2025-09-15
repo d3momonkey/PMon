@@ -583,26 +583,36 @@ updateDetailedContent(stats) {
           // Check if NPU was detected but no stats are available
           const detectionStatus = stats.npu.detected ? 'detected but monitoring not available' : 'not detected';
           const statusIcon = stats.npu.detected ? '⚠️' : '❌';
-          const statusColor = stats.npu.detected ? 'var(--accent-color)' : 'var(--text-muted)';
+          const statusClass = stats.npu.detected ? 'npu-detected' : 'npu-not-detected';
           
           npuContent.innerHTML = `
-            <div class="info-panel" style="text-align: center; padding: 2rem;">
-              <div class="chart-no-data">
-                <h4 style="margin-bottom: 1rem; color: ${statusColor};">NPU ${statusIcon} ${detectionStatus.toUpperCase()}</h4>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                  ${stats.npu.detected 
-                    ? 'An NPU was detected on this system, but monitoring APIs are not available.' 
-                    : 'No Neural Processing Unit (NPU) was found on this system.'}
-                </p>
-                <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; text-align: left; max-width: 500px; margin: 0 auto;">
-                  <h5 style="margin-bottom: 0.5rem;">NPU Support includes:</h5>
-                  <ul style="margin: 0; padding-left: 1.2rem; color: var(--text-muted);">
+            <div class="info-panel npu-status-panel">
+              <div class="npu-status-container">
+                <div class="npu-status-header ${statusClass}">
+                  <h3 class="npu-status-title">NPU ${statusIcon} ${detectionStatus.toUpperCase()}</h3>
+                </div>
+                
+                <div class="npu-status-description">
+                  <p>
+                    ${stats.npu.detected 
+                      ? 'An NPU was detected on this system, but monitoring APIs are not available.' 
+                      : 'No Neural Processing Unit (NPU) was found on this system.'}
+                  </p>
+                </div>
+                
+                <div class="npu-support-info">
+                  <h4>NPU Support includes:</h4>
+                  <ul class="npu-support-list">
                     <li>Intel NPU (Meteor Lake and newer)</li>
                     <li>Apple Neural Engine (M1/M2/M3 series)</li>
                     <li>AMD XDNA AI accelerators</li>
                     <li>Qualcomm AI Engine</li>
                   </ul>
-                  ${stats.npu.detected ? '<p style="margin-top: 1rem; font-size: 0.9em; color: var(--text-muted);"><strong>Note:</strong> NPU monitoring requires vendor-specific APIs that are not currently available in PMon.</p>' : ''}
+                  ${stats.npu.detected ? `
+                    <div class="npu-note">
+                      <p><strong>Note:</strong> NPU monitoring requires vendor-specific APIs that are not currently available in PMon.</p>
+                    </div>
+                  ` : ''}
                 </div>
               </div>
             </div>

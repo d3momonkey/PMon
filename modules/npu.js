@@ -18,8 +18,29 @@ class NPUMonitor {
     try {
       // Check for Intel NPU via Windows Device Manager or Linux lspci
       if (process.platform === 'win32') {
-        const { stdout } = await execAsync('wmic path win32_pnpentity where "name like \'%NPU%\'" get name');
-        this.hasIntelNpu = stdout.includes('NPU');
+        // Use multiple specific queries to avoid false positives from "Input" devices
+        const queries = [
+          'wmic path win32_pnpentity where "name like \'%Neural%\'" get name',
+          'wmic path win32_pnpentity where "name like \'%Intel NPU%\'" get name',
+          'wmic path win32_pnpentity where "description like \'%Neural Processing%\'" get name'
+        ];
+        
+        let npuFound = false;
+        for (const query of queries) {
+          try {
+            const { stdout } = await execAsync(query);
+            if (stdout && !stdout.includes('No Instance(s) Available')) {
+              const lines = stdout.split('\n').map(line => line.trim()).filter(line => line.length > 0 && line !== 'Name');
+              if (lines.length > 0) {
+                npuFound = true;
+                break;
+              }
+            }
+          } catch (err) {
+            // Continue to next query
+          }
+        }
+        this.hasIntelNpu = npuFound;
       } else if (process.platform === 'linux') {
         const { stdout } = await execAsync('lspci | grep -i "neural\\|npu"');
         this.hasIntelNpu = stdout.length > 0;

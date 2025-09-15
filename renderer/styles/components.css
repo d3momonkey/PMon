@@ -1112,3 +1112,135 @@
     align-items: flex-start;
   }
 }
+
+/* NPU Status Panel Styles */
+.npu-status-panel {
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.npu-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.npu-status-header {
+  margin-bottom: 1rem;
+}
+
+.npu-status-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.npu-detected .npu-status-title {
+  color: var(--accent-color);
+}
+
+.npu-not-detected .npu-status-title {
+  color: var(--text-muted);
+}
+
+.npu-status-description {
+  margin-bottom: 1.5rem;
+}
+
+.npu-status-description p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 500px;
+}
+
+.npu-support-info {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: left;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.npu-support-info h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.npu-support-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-muted);
+}
+
+.npu-support-list li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.npu-support-list li:last-child {
+  margin-bottom: 0;
+}
+
+.npu-note {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.npu-note p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.npu-note strong {
+  color: var(--text-secondary);
+}
+
+/* Responsive adjustments for NPU panel */
+@media (max-width: 768px) {
+  .npu-status-panel {
+    padding: 1.5rem 1rem;
+  }
+  
+  .npu-status-container {
+    gap: 1.5rem;
+  }
+  
+  .npu-status-title {
+    font-size: 1.3rem;
+  }
+  
+  .npu-support-info {
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .npu-status-panel {
+    padding: 1rem 0.5rem;
+  }
+  
+  .npu-status-title {
+    font-size: 1.2rem;
+  }
+  
+  .npu-support-info {
+    padding: 1rem;
+  }
+  
+  .npu-support-list {
+    padding-left: 1.2rem;
+  }
+}
